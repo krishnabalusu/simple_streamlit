@@ -3,9 +3,12 @@ import pickle
 
 import streamlit as st
 from dotenv import load_dotenv
+import pandas as pd
+import matplotlib.pyplot as plt
 
-from utils.b2 import B2
-from utils.modeling import *
+
+
+# from utils.b2 import B2
 
 
 # ------------------------------------------------------
@@ -19,10 +22,10 @@ REMOTE_DATA = 'coffee_analysis_w_sentiment.csv'
 # ------------------------------------------------------
 load_dotenv()
 
-# load Backblaze connection
-b2 = B2(endpoint=os.environ['B2_ENDPOINT'],
-        key_id=os.environ['B2_KEYID'],
-        secret_key=os.environ['B2_APPKEY'])
+# # load Backblaze connection
+# b2 = B2(endpoint=os.environ['B2_ENDPOINT'],
+#         key_id=os.environ['B2_KEYID'],
+#         secret_key=os.environ['B2_APPKEY'])
 
 
 # ------------------------------------------------------
@@ -60,19 +63,16 @@ st.write(
 We pull data from our Backblaze storage bucket, and render it in Streamlit.
 ''')
 
-df_coffee, benchmarks = get_data()
-analyzer = get_model()
+# df_coffee, benchmarks = get_data()
+# analyzer = get_model()
+
+df_coffee = pd.read_csv("Cleaned.csv")
 
 # ------------------------------
 # PART 1 : Filter Data
 # ------------------------------
-roast = st.selectbox("Select a roast:",
-                     df_coffee['roast'].unique())
 
-loc_country = st.selectbox("Select a roaster location:",
-                     df_coffee['loc_country'].unique())
-
-df_filtered = filter_coffee(roast, loc_country, df_coffee)
+df_filtered = df_coffee.groupby("Country").agg({'UnitPrice': 'sum'})
 
 st.write(
 '''
@@ -92,8 +92,10 @@ Compare this subset of reviews with the rest of the data.
 '''
 )
 
-fig = plot_sentiment(df_filtered, benchmarks)
-st.plotly_chart(fig)
+st.bar_chart(df_filtered)
+
+# fig = plot_sentiment(df_filtered, benchmarks)
+# st.plotly_chart(fig)
 
 # ------------------------------
 # PART 3 : Analyze Input Sentiment
@@ -107,9 +109,9 @@ Compare these results with the sentiment scores of your own input.
 '''
 )
 
-text = st.text_input("Write a paragraph, if you like.", 
-                     "Your text here.")
+# text = st.text_input("Write a paragraph, if you like.", 
+#                      "Your text here.")
 
-df_sentiment = get_sentence_sentiment(text, analyzer)
+# df_sentiment = get_sentence_sentiment(text, analyzer)
 
-st.dataframe(df_sentiment)
+# st.dataframe(df_sentiment)
