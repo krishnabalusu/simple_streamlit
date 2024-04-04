@@ -58,8 +58,9 @@ def get_model():
 # ------------------------------
 st.write(
 '''
-# Review Sentiment Analysis
-We pull data from our Backblaze storage bucket, and render it in Streamlit.
+# Price analysis
+we have shown unit prices amoung different countries
+
 ''')
 
 # df_coffee, benchmarks = get_data()
